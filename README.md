@@ -1,53 +1,140 @@
-# Game Launcher Scraper
+# Games Librarian
 
-Scan local launcher data for Steam, Epic Games Launcher, EA app, and GOG Galaxy, then generate a searchable HTML library.
+One app for your PC game libraries.
 
-## Usage
+Games Librarian scans your installed launchers, builds a unified game list, and lets you search and launch from one desktop window.
 
-```powershell
-python -m game_launcher_scraper --output out\games
-```
+---
 
-## Desktop app (Electron)
+## Screenshots
 
-The repository now includes an Electron desktop shell under `electron/`.
-It loads the generated game data from `dist/game-library/assets/games-data.js`
-and routes Launch clicks through Electron's main process so custom protocols
-and `shell:AppsFolder` targets are actually executed on Windows.
+> Add your screenshots here after each release so users can quickly see the app UI.
+
+- Main library view (search + filters + cards)
+- Settings dialog (Steam API key)
+- App console (scan/category refresh logs)
+
+## What you get
+
+- One combined library view across launchers
+- Fast search and filtering
+- Launch or install actions directly from the app
+- Category enrichment (Steam + RAWG)
+- Built-in console for scan/refresh logs
+
+## Supported launchers
+
+- Steam
+- Epic Games Launcher
+- EA app (Origin)
+- GOG Galaxy
+- Xbox / Microsoft Store ecosystem
+
+## Install and run (dev/local)
 
 ```powershell
 npm install
 npm run start
 ```
 
-To build a Windows installer/exe:
+If Electron launches but the library is empty, use **Scan PC Now** in the app to populate data.
+
+## Build Windows installer
 
 ```powershell
 npm run package:win
 ```
 
-The generator writes an `index.html` file plus an `assets` folder containing CSS, JavaScript, game data, and icons.
+Installer output is written to `release/`.
 
-If a game does not have a local launcher icon, the exporter will try to download a cover image from Wikipedia and cache it under `assets/icons/remote/`. When that lookup fails, it falls back to a generated SVG tile.
+Latest installer filename pattern:
 
-## Coverage limits
+- `Games Librarian Setup <version>.exe`
 
-The scraper only reads launcher data that is stored on the local disk in a parseable form. This means:
+## First-time usage
 
-- **GOG Galaxy**: full owned library is read from the local SQLite store (installed and not installed).
-- **Steam**:
-  - *Without an API key*: only games that are **installed locally** (have an `appmanifest_*.acf` under any `steamapps` library) are discovered.
-  - *With a Steam Web API key*: the full owned library is fetched from `IPlayerService/GetOwnedGames` and merged with the installed manifests. Cover art is pulled directly from `cdn.cloudflare.steamstatic.com` (no Wikipedia round-trip).
-  - In the Electron app, if no key is configured, a prompt lets the user enter a key or Cancel (installed-only mode).
-  - Keys saved from the Electron app are stored encrypted in local app data using Electron `safeStorage`.
-  - Supply the key via the `STEAM_API_KEY` env var (recommended) or `--steam-api-key`. The SteamID is auto-detected from `loginusers.vdf`; override with `STEAM_ID` or `--steam-id` if multiple accounts are present.
-  - Obtain a key at <https://steamcommunity.com/dev/apikey>. **Never commit the key to source control.**
-- **Epic Games Launcher**: only games that are **installed locally** (have a `.item` manifest under `Saved\Manifests`) are discovered. The Epic owned-but-not-installed library lives only in the Epic cloud account and is not cached in plaintext on disk — surfacing it would require authenticating to Epic's GraphQL store API, which is out of scope.
-- **EA app (formerly Origin)**: only games that are **installed locally** are discovered, via the per-game folders under `C:\ProgramData\EA Desktop\InstallData\<Game Name>\`. The full EA owned library is only available through EA's Juno cloud API and requires authenticated calls, which is out of scope.
-- **GOG noise filter**: promotional vouchers, discount codes, and add-ons (e.g. "Game Overlay 2", "CDPR Gear - discount code") are filtered out using GOG Galaxy's `ReleaseProperties.isDlc` flag.
+1. Start the app.
+2. Click **Scan PC Now** to detect your local libraries.
+3. Use **Reload** when you want to re-read data and refresh categories.
+4. Use the **Settings** button to manage Steam API key access.
 
-## Extending
+Tip: **Reload** merges quick data reload with category refresh so you do not need separate buttons.
 
-Add a new launcher by implementing `LauncherAdapter` in `src/game_launcher_scraper/launchers/base.py` and registering it in `src/game_launcher_scraper/launchers/__init__.py`.
+## Steam full library support
 
-Third-party adapters can also be discovered through the `game_launcher_scraper.launchers` entry-point group.
+By default, Steam shows installed games only.
+
+To include owned-but-not-installed games:
+
+1. Open **Settings** in the app.
+2. Add your Steam Web API key.
+3. Run **Scan PC Now** again.
+
+Notes:
+
+- Keys are stored locally using Electron `safeStorage` encryption.
+- Key entry is optional. You can cancel and continue with installed-only mode.
+- Get a key at <https://steamcommunity.com/dev/apikey>.
+
+If you cancel the prompt once, the app will not keep nagging on every startup. You can open Settings later and add/replace the key any time.
+
+## Known limits
+
+Games Librarian can only use data available locally on your machine unless an API integration is configured.
+
+- Steam without API key: installed only
+- Epic/EA cloud-owned libraries: not fully available from local data alone
+- Xbox visibility depends on local cache/install metadata available to your Windows user
+
+## Troubleshooting
+
+### I only see installed Steam games
+
+This is expected without a Steam Web API key.
+
+Fix:
+
+1. Open **Settings**.
+2. Paste your Steam API key.
+3. Click **Scan PC Now**.
+
+### Categories are missing for some games
+
+Category refresh uses Steam + RAWG and local cache. Some titles may still fail to match.
+
+Try:
+
+1. Click **Reload** (forces category refresh).
+2. Open console and check missing-category reason summaries.
+3. Run another refresh later (network/source availability can vary).
+
+### Build fails on Windows packaging
+
+Use:
+
+```powershell
+npm run package:win
+```
+
+This already runs the winCodeSign cache preparation script before electron-builder.
+
+## Privacy and security
+
+- Steam keys are stored locally and encrypted (Electron `safeStorage`).
+- Do not commit secrets or tokens to source control.
+- If you ever exposed a key, rotate it immediately in the provider portal.
+
+## For developers
+
+Python scanner entry point:
+
+```powershell
+python -m game_launcher_scraper --output out\games
+```
+
+Project structure:
+
+- `electron/` desktop app (main, preload, renderer)
+- `src/game_launcher_scraper/` scanner and launcher adapters
+- `dist/game-library/` generated assets loaded by Electron
+- `release/` packaged build outputs
