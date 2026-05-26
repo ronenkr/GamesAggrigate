@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Games Librarian</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Desktop launcher control</p>
+        <h1>Games Librarian</h1>
+        <p class="lede">Search your Steam, Epic, EA, GOG, and Xbox library and launch directly from this desktop app.</p>
+      </div>
+      <div class="stats">
+        <div><span id="game-count">0</span><label>Games</label></div>
+        <div><span id="launcher-count">0</span><label>Launchers</label></div>
+      </div>
+    </header>
+
+    <section class="controls">
+      <input id="search" type="search" placeholder="Search games, launchers, IDs, paths..." autocomplete="off" />
+      <select id="launcher-filter">
+        <option value="all">All launchers</option>
+      </select>
+      <select id="category-filter">
+        <option value="all">All categories</option>
+      </select>
+      <select id="availability-filter">
+        <option value="all">All availability</option>
+        <option value="launchable">Launchable (Installed)</option>
+        <option value="installable">Installable (Not Installed)</option>
+      </select>
+      <button id="reload" type="button" aria-live="polite" title="Re-read cached library + force re-fetch all genres">
+        <span class="scan-button-spinner" aria-hidden="true"></span>
+        <span class="scan-button-label">Reload</span>
+      </button>
+      <button id="scan-now" type="button" aria-live="polite">
+        <span class="scan-button-spinner" aria-hidden="true"></span>
+        <span class="scan-button-label">Scan PC Now</span>
+      </button>
+      <button id="settings-cog" type="button" title="Settings" aria-label="Settings">&#9881;</button>
+    </section>
+    <p id="scan-status" class="scan-status">Preparing library...</p>
+
+    <section id="empty-state" class="empty-state hidden">
+      <h2>No games found</h2>
+      <p>No records were loaded. Generate your library data first under dist/game-library/assets/games-data.js.</p>
+    </section>
+
+    <section id="grid" class="grid" aria-live="polite"></section>
+
+    <section id="app-console" class="app-console hidden" aria-live="polite">
+      <div class="app-console-header">
+        <strong>App Console</strong>
+        <div class="app-console-actions">
+          <button id="app-console-clear" type="button">Clear</button>
+          <button id="app-console-hide" type="button">Hide</button>
+        </div>
+      </div>
+      <div id="app-console-body" class="app-console-body"></div>
+    </section>
+
+    <section id="steam-key-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="steam-key-title">
+      <div class="modal-card">
+        <h2 id="steam-key-title">Steam API Key</h2>
+        <p>Enter your Steam Web API key to include your full owned Steam library, including games that are not installed.</p>
+        <input id="steam-key-input" type="password" placeholder="32-character Steam API key" autocomplete="off" spellcheck="false" />
+        <p id="steam-key-current" class="modal-note hidden">Saved key: ******</p>
+        <div class="modal-help">
+          <p>How to get your key:</p>
+          <ol>
+            <li>Sign in to Steam in your browser.</li>
+            <li>Open <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener noreferrer">steamcommunity.com/dev/apikey</a>.</li>
+            <li>Generate/copy your 32-character key and paste it here.</li>
+          </ol>
+        </div>
+        <p id="steam-key-note" class="modal-note">The key is stored encrypted on this PC only.</p>
+        <div class="modal-actions">
+          <button id="console-toggle" type="button">Console</button>
+          <button id="steam-key-save" type="button">Save Key</button>
+          <button id="steam-key-cancel" type="button">Cancel</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

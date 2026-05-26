@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "game-launcher-scraper"
+version = "0.1.0"
+description = "Scrape local game launchers and render a searchable HTML library"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[project.scripts]
+game-launcher-scraper = "game_launcher_scraper.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

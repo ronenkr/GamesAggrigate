@@ -1,0 +1,47 @@
+{
+  "name": "games-librarian",
+  "version": "0.1.0",
+  "description": "Desktop game library launcher built with Electron",
+  "main": "electron/main.js",
+  "private": true,
+  "scripts": {
+    "start": "node electron/scripts/ensure-electron-binary.js && electron .",
+    "dev": "node electron/scripts/ensure-electron-binary.js && electron .",
+    "package:win": "node electron/scripts/prepare-wincodesign.js && electron-builder --win nsis",
+    "postinstall": "node electron/scripts/ensure-electron-binary.js"
+  },
+  "devDependencies": {
+    "electron": "^42.2.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.gameslibrarian.desktop",
+    "productName": "Games Librarian",
+    "files": [
+      "electron/**/*",
+      "dist/game-library/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "icon": "electron/assets/games-librarian-icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "installerIcon": "electron/assets/games-librarian-icon.ico",
+      "uninstallerIcon": "electron/assets/games-librarian-icon.ico",
+      "installerHeaderIcon": "electron/assets/games-librarian-icon.ico",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

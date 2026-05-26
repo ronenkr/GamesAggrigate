@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Build output
+dist/game-library/
+dist/game-library/**
+dist/run_marker.txt
+build.log
+
+# Scratch / probe scripts
+probe_*.py
+*_probe.out
+*_probe.json
+epic_library.json
+epic_owned.json
+ea_probe.json
+ea_probe.out
+xbox_cache.db
+xbox_storage.db
+_tally.txt
+
+# Node / Electron
+node_modules/
+release/
+dist-electron/
+*.asar
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
